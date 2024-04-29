@@ -9,17 +9,3 @@ spec:
     - image: muuzii/go-webapp:11
       imagePullPolicy: IfNotPresent
       name: go-webapp
-  restartPolicy: Never
----
-apiVersion: v1
-kind: service
-metadata:
-  name: go-webapp-svc
-spec:
-  selector:
-    run: go-webapp
-  ports:
-    - protocol: TCP
-      port: 5000
-      targetPort: 5000
-  type: LoadBalancer
