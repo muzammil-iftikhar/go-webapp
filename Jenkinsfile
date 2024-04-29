@@ -3,6 +3,9 @@ pipeline {
   tools {
     go 'Go1.20'
   }
+  environment {
+        SCANNER_HOME=tool 'sonar-scanner'
+    }
   stages {
     stage('Clean workspace') {
       steps {
@@ -19,5 +22,16 @@ pipeline {
       sh 'go build -o main .'
     }
   }
+  stage('SonarQube Analysis') {
+    steps {
+      
+      withSonarQubeEnv('sonar-server') {
+      sh '''$SCANNER_HOME/bin/sonar-scanner \
+      -Dsonar.projectName=go-webapp \
+      -Dsonar.projectKey=go-webapp \
+      -Dsonar.sources=. '''
+    }
+}
+}
 }
 }
