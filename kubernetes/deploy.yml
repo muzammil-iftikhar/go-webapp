@@ -9,13 +9,12 @@ spec:
     - image: muuzii/go-webapp:11
       imagePullPolicy: IfNotPresent
       name: go-webapp
-  dnsPolicy: ClusterFirst
   restartPolicy: Never
 ---
 apiVersion: v1
 kind: service
 metadata:
-  name: go-webapp
+  name: go-webapp-svc
 spec:
   selector:
     run: go-webapp
