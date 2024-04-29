@@ -30,8 +30,15 @@ pipeline {
       -Dsonar.projectName=go-webapp \
       -Dsonar.projectKey=go-webapp \
       -Dsonar.sources=. '''
+      }
     }
-}
-}
-}
+  }
+    stage('Quality Gate') {
+    steps {
+      script {
+        waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonar-token'
+        }
+      }
+    }
+  }
 }
