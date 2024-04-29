@@ -1,7 +1,6 @@
 pipeline {
   agent { label 'jenkins-agent' }
   tools {
-    jkd 'Java17'
     go 'Go1.20'
   }
   stages {
