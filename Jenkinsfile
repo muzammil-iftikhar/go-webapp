@@ -5,23 +5,25 @@ pipeline {
   }
   environment {
         SCANNER_HOME=tool 'sonar-scanner'
+        APP_NAME='go-webapp'
+        DOCKER_USER='muuzii'
+        IMAGE_NAME="${DOCKER_USER}" + "/" + "${APP_NAME}"
+        IMAGE_TAG="${env.GIT_COMMIT}-${env.BUILD_NUMBER}"
     }
+
   stages {
     stage('Clean workspace') {
       steps {
         cleanWs()
       }
   }
+
   stage('Checkout') {
     steps {
       git branch: 'main', credentialsId: 'github', url: 'https://github.com/muzammil-iftikhar/go-webapp.git'
     }
   }
-  stage('Build') {
-    steps {
-      sh 'go build -o main .'
-    }
-  }
+
   stage('SonarQube Analysis') {
     steps {
       
@@ -33,10 +35,20 @@ pipeline {
       }
     }
   }
+
     stage('Quality Gate') {
     steps {
       script {
         waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonar-token'
+        }
+      }
+    }
+
+    stage('Docker build and push') {
+      steps {
+        withDockerRegistry([credentialsId: 'docker', url: '']) {
+          sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+          sh 'docker push ${IMAGE_NAME}:${IMAGE_TAG}'
         }
       }
     }

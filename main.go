@@ -14,7 +14,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Hello, man!"})
 	})
 
-	// Start the server on port 8080
-	fmt.Println("Server listening on port 8080")
-	router.Run("0.0.0.0:8080")
+	// Start the server on port 5000
+	fmt.Println("Server listening on port 5000")
+	router.Run("0.0.0.0:5000")
 }

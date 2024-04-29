@@ -9,6 +9,6 @@ COPY . ./
 
 RUN go build -o hello-web-service
 
-EXPOSE 8080
+EXPOSE 5000
 
 CMD ["./hello-web-service"]
