@@ -8,7 +8,7 @@ pipeline {
         APP_NAME='go-webapp'
         DOCKER_USER='muuzii'
         IMAGE_NAME="${DOCKER_USER}" + "/" + "${APP_NAME}"
-        IMAGE_TAG="${env.GIT_COMMIT}-${env.BUILD_NUMBER}"
+        IMAGE_TAG="${env.BUILD_NUMBER}"
     }
 
   stages {
@@ -39,7 +39,7 @@ pipeline {
     stage('Quality Gate') {
     steps {
       script {
-        waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonar-token'
+        waitForQualityGate abortPipeline: true, credentialsId: 'jenkins-sonar-token'
         }
       }
     }
@@ -50,6 +50,18 @@ pipeline {
           sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
           sh 'docker push ${IMAGE_NAME}:${IMAGE_TAG}'
         }
+      }
+    }
+
+    stage('Trivy scan') {
+      steps {
+    sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${IMAGE_NAME}:${IMAGE_TAG} --no-progress --scanners vuln --exit-code 0 --severity HIGH,CRITICAL --format table')
+      }
+    }
+
+    stage('Clean up images') {
+      steps {
+        sh 'docker rmi ${IMAGE_NAME}:${IMAGE_TAG}'
       }
     }
   }
